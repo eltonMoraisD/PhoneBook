@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/itemMenuCall"
+        android:title="Call"
+        />
+
+    <item
+        android:id="@+id/itemMenuSMS"
+        android:title="SMS"
+        />
+
+    <item
+        android:id="@+id/itemMenuContextFavoritos"
+        android:title="Favorite"
+        />
+
+    <item
+        android:id="@+id/itemMenuRemove"
+        android:title="Remove"
+        />
+</menu>

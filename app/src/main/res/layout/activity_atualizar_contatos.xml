@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    tools:context=".activity.AtualizarConatosActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/updateFotoUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_margin="40dp"
+        android:src="@drawable/ic_add_foto_azul_24dp"
+        />
+
+    <EditText
+        android:id="@+id/updateNomeUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textAutoComplete"
+        android:hint="Nome Completo"
+        />
+
+    <EditText
+        android:id="@+id/updateTelefoneUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Telefone"
+        />
+
+    <EditText
+        android:id="@+id/updateEmailUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:hint="email"
+        />
+
+
+    <EditText
+        android:id="@+id/updateDataNascimentoUsuario"
+        android:hint="Data de Nascimento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="date" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/buttonCancelarUpdate"
+            android:layout_width="190dp"
+            android:layout_height="wrap_content"
+            android:background="@color/cancelar"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="2"
+            android:text="Cancelar"/>
+
+        <Button
+            android:id="@+id/buttonUpdate"
+            android:layout_width="190dp"
+            android:layout_height="wrap_content"
+            android:text="Update"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="2"
+            android:background="@color/adicionar"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

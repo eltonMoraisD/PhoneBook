@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:layout_weight="4"
+    tools:context=".activity.AdicionarContatosActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/uploadFotoUsuario"
+        android:layout_width="200dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_margin="40dp"
+        android:layout_weight="4"
+
+        android:src="@drawable/ic_adicionar_foto_azul_24dp"
+
+
+        />
+
+
+    <EditText
+        android:id="@+id/addNomeUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nome Completo"
+        android:inputType="textAutoComplete"
+        />
+
+    <EditText
+        android:id="@+id/addTelefoneUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Telefone"
+        android:inputType="phone"
+
+        />
+
+    <EditText
+        android:id="@+id/addEmailUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="email"
+        android:inputType="textEmailAddress"
+        />
+
+
+    <EditText
+        android:id="@+id/addDataNascimentoUsuario"
+        android:hint="Data de Nascimento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="date" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/buttonCancelar"
+            android:layout_width="190dp"
+            android:layout_height="wrap_content"
+            android:background="@color/cancelar"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="2"
+
+            android:text="Cancelar"/>
+
+        <Button
+            android:id="@+id/buttonAdicionar"
+            android:layout_width="190dp"
+            android:layout_height="wrap_content"
+            android:text="Adicionar"
+            android:layout_weight="2"
+
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/adicionar"
+            />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
