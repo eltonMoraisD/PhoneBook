@@ -28,9 +28,9 @@ public class FavoritosActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(),LinearLayout.VERTICAL));
 
-        adapterFavoritos = new AdapterFavoritos(Comon.listaFavoritos);
+        adapterFavoritos = new AdapterFavoritos(this);
+
         recyclerView.setAdapter(adapterFavoritos);
     }
-
 
 }

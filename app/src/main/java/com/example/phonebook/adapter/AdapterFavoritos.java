@@ -1,6 +1,7 @@
 package com.example.phonebook.adapter;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,28 +26,29 @@ import java.util.List;
 
 public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.FavoriteViewHolder> {
 
-    private List<ContatosUsuarios> lista;
+    //private List<ContatosUsuarios> lista;
+    Context context;
 
-    public AdapterFavoritos(List<ContatosUsuarios> lista) {
-        this.lista = lista;
+    public AdapterFavoritos(Context context) {
+        this.context = context;
     }
 
     @NonNull
     @Override
     public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.adapter_favoritos, parent, false);
 
+        View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.adapter_favoritos, parent, false);
         return new FavoriteViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final FavoriteViewHolder holder, final int position) {
-        final ContatosUsuarios contatosUsuarios = lista.get(position);
+        final ContatosUsuarios contatosUsuarios = Comon.listaContatosUsuarios.get(position);
 
-        holder.nomeUsuarioFav.setText(contatosUsuarios.getNomeUsuario());
-        holder.telefoneUsuarioFav.setText(contatosUsuarios.getTelefoneUsuario());
-        holder.fotoUsuarioFav.setImageURI(Comon.listaImagensFavoritos.get(position));
+        holder.nomeUsuarioFav.setText(Comon.listaContatosUsuarios.get(position).getNomeUsuario());
+        holder.telefoneUsuarioFav.setText(Comon.listaContatosUsuarios.get(position).getTelefoneUsuario());
+        holder.fotoUsuarioFav.setImageBitmap(Comon.listaContatosUsuarios.get(position).getImagemUsuario());
 
         holder.deleteContato.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,8 +63,10 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
                 alertDialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog,int which) {
-                        Comon.listaFavoritos.remove(holder.getAdapterPosition());
-                        Comon.listaImagensFavoritos.remove(holder.getAdapterPosition());
+                      //  Comon.listaFavoritos.remove(holder.getAdapterPosition());
+                        //Comon.listaImagensFavoritos.remove(holder.getAdapterPosition());
+
+                        Comon.listaContatosUsuarios.get(position).setFavorite(false);
                         notifyDataSetChanged();
 
                     }
@@ -79,7 +83,15 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        int cont = 0;
+
+        for (int i = 0; i < Comon.listaContatosUsuarios.size(); i++){
+            if (Comon.listaContatosUsuarios.get(i).getFavorite()){
+                cont ++;
+            }
+        }
+
+        return cont;
     }
 
 

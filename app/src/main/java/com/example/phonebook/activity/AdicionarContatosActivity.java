@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -13,6 +14,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -34,14 +37,14 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
     private ImageView fotoUsuario;
     private EditText nomeUsuario,telefone,email,dataNascimento;
     private Button cancelar, adicionar;
-
-    private Context context;
+    private ContatosUsuarios contatosUsuarios;
 
     private final int GALLERIA_IMAGENS = 1;
     private final int PERMISSAO_REQUEST = 2;
 
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,14 +92,13 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
         adicionar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ContatosUsuarios contatosUsuarios = new ContatosUsuarios();
+                contatosUsuarios = new ContatosUsuarios();
 
                 String nome = nomeUsuario.getText().toString();
                 String tel = telefone.getText().toString();
                 String emailUsuario = email.getText().toString();
                 String dataNasc = dataNascimento.getText().toString();
-
-
+                Bitmap bitmap = ((BitmapDrawable)fotoUsuario.getDrawable()).getBitmap();
 
                 if (nome.equals("")){
                     Toast.makeText(getApplicationContext(),"Informa um nome",Toast.LENGTH_SHORT).show();
@@ -115,6 +117,7 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
                     contatosUsuarios.setTelefoneUsuario(tel);
                     contatosUsuarios.setEmailUsuario(emailUsuario);
                     contatosUsuarios.setDatanascimento(dataNasc);
+                    contatosUsuarios.setImagemUsuario(bitmap);
 
                     Comon.listaContatosUsuarios.add(contatosUsuarios);
 
@@ -152,24 +155,6 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
         }
     }
 
-   //Quando o usuario escolhe a permissao --> sim ou nao
-   /* @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        if (requestCode == PERMISSAO_REQUEST) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // A permissão foi concedida. Pode continuar
-                Toast.makeText(this,"Permição aceita",Toast.LENGTH_SHORT).show();
-            } else {
-                // A permissão foi negada.  desabilitar botoes
-                Toast.makeText(this,"Permição Negada",Toast.LENGTH_SHORT).show();
-
-            }
-            return;
-        }
-    }*/
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -177,6 +162,7 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
         if (resultCode == RESULT_OK && requestCode == GALLERIA_IMAGENS) {
             Uri selectedImage = data.getData();
             String[] filePath = { MediaStore.Images.Media.DATA };
+
             Cursor c = getContentResolver().query(selectedImage,filePath, null, null, null);
             c.moveToFirst();
             int columnIndex = c.getColumnIndex(filePath[0]);
@@ -184,9 +170,9 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
             c.close();
             Bitmap bitmap = (BitmapFactory.decodeFile(picturePath));
             fotoUsuario.setImageBitmap(bitmap);
+
             fotoUsuario.setImageURI(selectedImage);
 
-            Comon.listaImagensUsuarios.add(selectedImage);
         }
     }
 
@@ -199,6 +185,7 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
                         Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         );
         datePickerDialog.show();
+
     }
 
     @Override

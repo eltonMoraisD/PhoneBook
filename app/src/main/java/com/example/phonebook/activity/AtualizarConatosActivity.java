@@ -2,11 +2,15 @@ package com.example.phonebook.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -33,8 +37,9 @@ public class AtualizarConatosActivity extends AppCompatActivity  implements Date
 
     private String nome,telefone,email,dataNasc;
     private int position;
-    private Uri imagem;
+    private Bitmap imagem;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +62,14 @@ public class AtualizarConatosActivity extends AppCompatActivity  implements Date
             nome = extras.getString("nomeUsuario");
             telefone = extras.getString("telefoneUsuario");
             email = extras.getString("emailUsuario");
-            imagem = extras.getParcelable("fotoUsuario");
+            imagem = BitmapFactory.decodeByteArray(getIntent()
+                    .getByteArrayExtra("fotoUsuario"),
+                    0,getIntent().getByteArrayExtra("fotoUsuario").length);
             dataNasc = extras.getString("dataNasc");
             position = extras.getInt("position");
 
             updateDataNasc.setText(dataNasc);
-            updateFotoUsuario.setImageURI(imagem);
+            updateFotoUsuario.setImageBitmap(imagem);
             updateNomeUsuario.setText(nome);
             updateTelefoneUsuario.setText(telefone);
             updateEmailUsuario.setText(email);
@@ -107,13 +114,17 @@ public class AtualizarConatosActivity extends AppCompatActivity  implements Date
                     Toast.makeText(getApplicationContext(),"Campo não pode ser vazio",Toast.LENGTH_SHORT).show();
 
                 }else {
+                    Bitmap bitmap = ((BitmapDrawable)updateFotoUsuario.getDrawable()).getBitmap();
                     ContatosUsuarios contatosUsuarios = new ContatosUsuarios();
                     contatosUsuarios.setNomeUsuario(updateNomeUsuario.getText().toString());
                     contatosUsuarios.setTelefoneUsuario(updateTelefoneUsuario.getText().toString());
                     contatosUsuarios.setEmailUsuario(updateEmailUsuario.getText().toString());
                     contatosUsuarios.setDatanascimento(updateDataNasc.getText().toString());
+                    contatosUsuarios.setImagemUsuario(bitmap);
 
                     Comon.listaContatosUsuarios.set(position, contatosUsuarios);
+                    Comon.listaContatosUsuarios.get(position).setFavorite(true);
+
                     startActivity(new Intent(getApplicationContext(), ContactActivity.class));
                 }
             }
@@ -150,10 +161,15 @@ public class AtualizarConatosActivity extends AppCompatActivity  implements Date
             String[] filePath = { MediaStore.Images.Media.DATA };
             Cursor c = getContentResolver().query(selectedImage,filePath, null, null, null);
             c.moveToFirst();
-            c.close();
 
+            int columnIndex = c.getColumnIndex(filePath[0]);
+            String picturePath = c.getString(columnIndex);
+
+            c.close();
+            Bitmap bitmap = (BitmapFactory.decodeFile(picturePath));
+            updateFotoUsuario.setImageBitmap(bitmap);
             updateFotoUsuario.setImageURI(selectedImage);
-            Comon.listaImagensUsuarios.set(position,selectedImage);
+            //Comon.listaImagensUsuarios.set(position,selectedImage);
         }
     }
 

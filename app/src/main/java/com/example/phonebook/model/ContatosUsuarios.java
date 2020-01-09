@@ -1,6 +1,6 @@
 package com.example.phonebook.model;
 
-import android.widget.ImageView;
+import android.graphics.Bitmap;
 
 public class ContatosUsuarios {
 
@@ -8,8 +8,8 @@ public class ContatosUsuarios {
     private String telefoneUsuario;
     private String emailUsuario;
     private String datanascimento;
-    private ImageView imagemUsuario;
-
+    private Bitmap imagemUsuario;
+    private Boolean isFavorite = false;
 
 
     public String getNomeUsuario() {
@@ -44,11 +44,19 @@ public class ContatosUsuarios {
         this.datanascimento = datanascimento;
     }
 
-    public ImageView getImagemUsuario() {
+    public Bitmap getImagemUsuario() {
         return imagemUsuario;
     }
 
-    public void setImagemUsuario(ImageView imagemUsuario) {
+    public void setImagemUsuario(Bitmap imagemUsuario) {
         this.imagemUsuario = imagemUsuario;
+    }
+
+    public Boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
     }
 }
