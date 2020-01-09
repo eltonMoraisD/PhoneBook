@@ -173,6 +173,7 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
 
             fotoUsuario.setImageURI(selectedImage);
 
+
         }
     }
 
