@@ -112,7 +112,9 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
                 }else if (dataNasc.equals("")){
                     Toast.makeText(getApplicationContext(),"Informa o número de telefone",Toast.LENGTH_SHORT).show();
 
-                }else {
+                }
+
+                else {
                     contatosUsuarios.setNomeUsuario(nome);
                     contatosUsuarios.setTelefoneUsuario(tel);
                     contatosUsuarios.setEmailUsuario(emailUsuario);
