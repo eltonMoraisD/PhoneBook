@@ -2,6 +2,8 @@ package com.example.phonebook.model;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+
 public class ContatosUsuarios {
 
     private String nomeUsuario;
@@ -9,6 +11,34 @@ public class ContatosUsuarios {
     private String emailUsuario;
     private String datanascimento;
     private Bitmap imagemUsuario;
+    private Double latitude;
+    private Double longitude;
+    private Long ID;
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     private Boolean isFavorite = false;
 
 
@@ -57,6 +87,6 @@ public class ContatosUsuarios {
     }
 
     public void setFavorite(Boolean favorite) {
-        isFavorite = favorite;
+        this.isFavorite = favorite;
     }
 }

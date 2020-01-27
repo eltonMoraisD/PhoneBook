@@ -1,32 +1,46 @@
 package com.example.phonebook.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+
 import com.example.phonebook.R;
+import com.example.phonebook.Utils.ContatoDAO;
 import com.example.phonebook.adapter.AdapterContact;
-import com.example.phonebook.comon.Comon;
+import com.example.phonebook.model.ContatosUsuarios;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class ContactActivity extends AppCompatActivity {
+import java.util.List;
 
+public class ContactActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AdapterContact adapterContact;
     private FloatingActionButton floatingActionButton;
+    private List<ContatosUsuarios> listaContatos;
+    private ContatoDAO contatoDAO;
+    private SwipeRefreshLayout refreshLayout;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
+        refreshLayout = findViewById(R.id.itemsswipetorefresh);
         recyclerView = findViewById(R.id.recyclerListaContact);
         floatingActionButton = findViewById(R.id.fabAdicionarContato);
 
@@ -34,17 +48,30 @@ public class ContactActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
-        adapterContact = new AdapterContact(Comon.listaContatosUsuarios);
+        contatoDAO = new ContatoDAO(getApplicationContext());
+        listaContatos = contatoDAO.listar();
+
+        adapterContact = new AdapterContact(listaContatos);
         recyclerView.setAdapter(adapterContact);
-
         registerForContextMenu(recyclerView);
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), AdicionarContatosActivity.class));
+            }
+        });
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(false);
+                listaContatos = contatoDAO.listar();
+                refreshLayout.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+                refreshLayout.setColorSchemeColors(Color.WHITE);
+                adapterContact = new AdapterContact(listaContatos);
+                recyclerView.setAdapter(adapterContact);
             }
         });
 
@@ -56,6 +83,7 @@ public class ContactActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
@@ -69,6 +97,12 @@ public class ContactActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
 
+            case R.id.refresh:
+                refreshLayout.setRefreshing(false);
+                listaContatos = contatoDAO.listar();
+                adapterContact = new AdapterContact(listaContatos);
+                recyclerView.setAdapter(adapterContact);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

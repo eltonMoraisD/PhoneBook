@@ -1,11 +1,19 @@
 package com.example.phonebook.adapter;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,14 +23,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.phonebook.R;
-import com.example.phonebook.activity.AtualizarConatosActivity;
-import com.example.phonebook.comon.Comon;
+import com.example.phonebook.Utils.ContatoDAO;
+import com.example.phonebook.activity.AtualizarContatosActivity;
 import com.example.phonebook.model.ContatosUsuarios;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
@@ -33,6 +44,8 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
     private ImageView btnAtualizarContato;
     private int posicao;
     private int posicaoAdapter;
+    private Long id;
+    private ContatosUsuarios contatosUsuarios;
 
     public AdapterContact(List<ContatosUsuarios> lista) {
         this.lista = lista;
@@ -46,17 +59,26 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
         return new ContactViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(final ContactViewHolder holder, final int position) {
 
-        ContatosUsuarios contatosUsuarios = lista.get(position);
+        contatosUsuarios = lista.get(position);
 
         holder.nomeUsuario.setText(contatosUsuarios.getNomeUsuario());
         holder.telefoneUsuario.setText(contatosUsuarios.getTelefoneUsuario());
         holder.emailUsuario.setText(contatosUsuarios.getEmailUsuario());
         holder.dataNasc.setText(contatosUsuarios.getDatanascimento());
-        holder.fotoUsuario.setImageBitmap(contatosUsuarios.getImagemUsuario());
+        holder.latitude.setText(contatosUsuarios.getLatitude().toString());
+        holder.longitude.setText(contatosUsuarios.getLongitude().toString());
 
+        if (lista.get(position).getImagemUsuario() != null) {
+            holder.fotoUsuario.setImageBitmap(contatosUsuarios.getImagemUsuario());
+
+        } else {
+            //  holder.fotoUsuario.setImageResource(R.drawable.ic_contact_default_24dp);
+
+        }
         posicao = position;
 
         posicaoAdapter = holder.getAdapterPosition(); // pegar a posiçao do adapter
@@ -64,17 +86,20 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
         btnAtualizarContato.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), AtualizarConatosActivity.class);
-                Bitmap bitmap = ((BitmapDrawable)holder.fotoUsuario.getDrawable()).getBitmap();
+                Intent intent = new Intent(v.getContext(), AtualizarContatosActivity.class);
+                Bitmap bitmap = ((BitmapDrawable) holder.fotoUsuario.getDrawable()).getBitmap();
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG,50,outputStream);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
 
                 intent.putExtra("nomeUsuario", holder.nomeUsuario.getText().toString());
                 intent.putExtra("telefoneUsuario", holder.telefoneUsuario.getText().toString());
-                intent.putExtra("fotoUsuario", outputStream.toByteArray() );
+                intent.putExtra("fotoUsuario", outputStream.toByteArray());
                 intent.putExtra("dataNasc", holder.dataNasc.getText().toString());
                 intent.putExtra("emailUsuario", holder.emailUsuario.getText().toString());
                 intent.putExtra("position", position);
+                intent.putExtra("id", contatosUsuarios.getID());
+                intent.putExtra("lat", holder.latitude.getText().toString());
+                intent.putExtra("lon", holder.longitude.getText().toString());
 
                 v.getContext().startActivity(intent);
             }
@@ -93,6 +118,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
         private TextView telefoneUsuario;
         private TextView emailUsuario;
         private TextView dataNasc;
+        private TextView latitude, longitude;
 
         private ContactViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -103,6 +129,8 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
             btnAtualizarContato = itemView.findViewById(R.id.btnAtualizarContato);
             emailUsuario = itemView.findViewById(R.id.emailUsuario);
             dataNasc = itemView.findViewById(R.id.dataNasc);
+            latitude = itemView.findViewById(R.id.latitude);
+            longitude = itemView.findViewById(R.id.longitude);
 
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -122,19 +150,26 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
 
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public boolean onMenuItemClick(final MenuItem item) {
 
             String numTelefone = telefoneUsuario.getText().toString();
             String uri = numTelefone.trim();
-            Uri chamada = Uri.parse("tel:" + uri);
-            Intent intent;
+            final Uri chamada = Uri.parse("tel:" + uri);
+            final Intent intent;
 
             switch (item.getItemId()) {
                 case 1:
                     // efetuar a ligaçao
-                    intent = new Intent(Intent.ACTION_CALL);
+
+                    intent = new Intent(Intent.ACTION_CALL, chamada);
+
+                    if (ActivityCompat.checkSelfPermission(itemView.getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions((Activity) itemView.getContext(), new String[]{Manifest.permission.CALL_PHONE}, 1);
+                    }
                     intent.setData(chamada);
+
                     itemView.getContext().startActivity(intent);
 
                     return true;
@@ -145,17 +180,20 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
 
                 case 3:
                     //adicionar aos favoritos
-                    Bitmap bitmap = ((BitmapDrawable)fotoUsuario.getDrawable()).getBitmap();
-                    final ContatosUsuarios con = new ContatosUsuarios();
-                    con.setNomeUsuario(nomeUsuario.getText().toString());
-                    con.setTelefoneUsuario(telefoneUsuario.getText().toString());
-                    con.setImagemUsuario(bitmap);
+                    /*Bitmap bitmap = ((BitmapDrawable) fotoUsuario.getDrawable()).getBitmap();
 
+                    contatosUsuarios.setNomeUsuario(nomeUsuario.getText().toString());
+                    contatosUsuarios.setTelefoneUsuario(telefoneUsuario.getText().toString());
+                    contatosUsuarios.setImagemUsuario(bitmap);
+                    contatosUsuarios.setFavorite(true);
+*/
                     //con.setFavorite(true);
-                   Comon.listaContatosUsuarios.get(posicao).setFavorite(true);
-
-
-                    Toast.makeText(itemView.getContext(), "Contato " + con.getNomeUsuario() + " adicionado nos favoritos", Toast.LENGTH_LONG).show();
+                    //Comon.listaContatosUsuarios.get(posicao).setFavorite(true);
+                    //contatosUsuarios.setFavorite(true);
+                    ContatoDAO contatoDAO = new ContatoDAO(itemView.getContext());
+                    contatoDAO.listar().get(posicao).setFavorite(true);
+                    lista.get(posicao).setFavorite(true);
+                    Toast.makeText(itemView.getContext(), "Contato " + lista.get(posicao).getFavorite() + " adicionado nos favoritos", Toast.LENGTH_LONG).show();
                     notifyDataSetChanged();
                     return true;
 
@@ -166,11 +204,22 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
                     alertDialog.setMessage("Deseja remover o contacto?");
 
                     alertDialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+
+                        @RequiresApi(api = Build.VERSION_CODES.N)
                         public void onClick(DialogInterface dialog, int which) {
-                            //Comon.listaContatosUsuarios.remove(Comon.listaContatosUsuarios.get(getAdapterPosition()));
-                            //Comon.listaImagensUsuarios.remove(Comon.listaImagensUsuarios.get(getAdapterPosition()));
-                            Comon.listaContatosUsuarios.remove(posicao);
-                            notifyDataSetChanged();
+                            ContatoDAO contatoDAO = new ContatoDAO(itemView.getContext());
+
+
+                            Bitmap bitmap = ((BitmapDrawable) fotoUsuario.getDrawable()).getBitmap();
+
+                            contatosUsuarios.setNomeUsuario(nomeUsuario.getText().toString());
+                            contatosUsuarios.setTelefoneUsuario(telefoneUsuario.getText().toString());
+                            contatosUsuarios.setImagemUsuario(bitmap);
+                            contatosUsuarios.setID(contatoDAO.listar().get(posicao).getID());
+
+                            contatoDAO.deletar(contatosUsuarios);
+
+
                         }
                     });
                     alertDialog.setNegativeButton("Não", null);
@@ -179,4 +228,6 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
             return true;
         }
     }
+
+
 }

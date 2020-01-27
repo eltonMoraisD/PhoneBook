@@ -5,31 +5,38 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.phonebook.R;
-import com.example.phonebook.comon.Comon;
+import com.example.phonebook.Utils.Comon;
+import com.example.phonebook.Utils.ContatoDAO;
 import com.example.phonebook.model.ContatosUsuarios;
 
 import java.util.List;
 
 public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.FavoriteViewHolder> {
 
-    //private List<ContatosUsuarios> lista;
-    Context context;
+    private Context context;
+    private List<ContatosUsuarios> lista;
+    private ContatoDAO contatoDAO;
+    private ContatosUsuarios contatosUsuarios;
 
-    public AdapterFavoritos(Context context) {
+    public AdapterFavoritos(Context context, List<ContatosUsuarios> lista) {
+        this.lista = lista;
         this.context = context;
     }
 
@@ -38,22 +45,20 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
     public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.adapter_favoritos, parent, false);
+                .inflate(R.layout.adapter_favoritos, parent, false);
         return new FavoriteViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final FavoriteViewHolder holder, final int position) {
-        final ContatosUsuarios contatosUsuarios = Comon.listaContatosUsuarios.get(position);
-
-        holder.nomeUsuarioFav.setText(Comon.listaContatosUsuarios.get(position).getNomeUsuario());
-        holder.telefoneUsuarioFav.setText(Comon.listaContatosUsuarios.get(position).getTelefoneUsuario());
-        holder.fotoUsuarioFav.setImageBitmap(Comon.listaContatosUsuarios.get(position).getImagemUsuario());
+        contatosUsuarios = lista.get(position);
+        holder.nomeUsuarioFav.setText(contatosUsuarios.getNomeUsuario());
+        holder.telefoneUsuarioFav.setText(contatosUsuarios.getTelefoneUsuario());
+        holder.fotoUsuarioFav.setImageBitmap(contatosUsuarios.getImagemUsuario());
 
         holder.deleteContato.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(v.getContext());
 
@@ -62,32 +67,38 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
 
                 alertDialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog,int which) {
-                      //  Comon.listaFavoritos.remove(holder.getAdapterPosition());
-                        //Comon.listaImagensFavoritos.remove(holder.getAdapterPosition());
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    public void onClick(DialogInterface dialog, int which) {
 
-                        Comon.listaContatosUsuarios.get(position).setFavorite(false);
+                        //lista.get(contatosUsuarios).setFavorite(false);
                         notifyDataSetChanged();
 
                     }
                 });
 
-                alertDialog.setNegativeButton("Não",null);
+                alertDialog.setNegativeButton("Não", null);
                 alertDialog.show();
-
-
 
             }
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public int getItemCount() {
         int cont = 0;
+        contatoDAO = new ContatoDAO(context);
+        for (int i = 0; i < lista.size(); i++) {
 
-        for (int i = 0; i < Comon.listaContatosUsuarios.size(); i++){
-            if (Comon.listaContatosUsuarios.get(i).getFavorite()){
-                cont ++;
+            Log.i("cont", "Entrou no for");
+            if (lista.get(i).getFavorite()) {
+                Log.i("cont", "Entrou no if");
+                cont++;
+
+
+            } else {
+                Log.i("cont", "Entrou no else");
+
             }
         }
 
@@ -143,7 +154,8 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
                     itemView.getContext().startActivity(intent);
                     return true;
 
-            }return true;
+            }
+            return true;
         }
     }
 }

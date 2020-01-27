@@ -18,10 +18,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnContinue = findViewById(R.id.buttonContinue);
-
     }
 
-    public void abrirListaConctact(View view){
-        startActivity(new Intent(this,ContactActivity.class));
+    public void abrirListaConctact(View view) {
+        startActivity(new Intent(this, ContactActivity.class));
     }
+
 }
