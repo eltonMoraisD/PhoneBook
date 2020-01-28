@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.example.phonebook.R;
+import com.example.phonebook.Utils.Comon;
 import com.example.phonebook.Utils.ContatoDAO;
 import com.example.phonebook.adapter.AdapterContact;
 import com.example.phonebook.model.ContatosUsuarios;
@@ -30,7 +31,6 @@ public class ContactActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AdapterContact adapterContact;
     private FloatingActionButton floatingActionButton;
-    private List<ContatosUsuarios> listaContatos;
     private ContatoDAO contatoDAO;
     private SwipeRefreshLayout refreshLayout;
 
@@ -50,9 +50,9 @@ public class ContactActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         contatoDAO = new ContatoDAO(getApplicationContext());
-        listaContatos = contatoDAO.listar();
+        Comon.listaContatosUsuarios = contatoDAO.listar();
 
-        adapterContact = new AdapterContact(listaContatos);
+        adapterContact = new AdapterContact(Comon.listaContatosUsuarios);
         recyclerView.setAdapter(adapterContact);
         registerForContextMenu(recyclerView);
 
@@ -67,10 +67,10 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 refreshLayout.setRefreshing(false);
-                listaContatos = contatoDAO.listar();
+                Comon.listaContatosUsuarios = contatoDAO.listar();
                 refreshLayout.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
                 refreshLayout.setColorSchemeColors(Color.WHITE);
-                adapterContact = new AdapterContact(listaContatos);
+                adapterContact = new AdapterContact(Comon.listaContatosUsuarios);
                 recyclerView.setAdapter(adapterContact);
             }
         });
@@ -99,8 +99,8 @@ public class ContactActivity extends AppCompatActivity {
 
             case R.id.refresh:
                 refreshLayout.setRefreshing(false);
-                listaContatos = contatoDAO.listar();
-                adapterContact = new AdapterContact(listaContatos);
+                Comon.listaContatosUsuarios = contatoDAO.listar();
+                adapterContact = new AdapterContact(Comon.listaContatosUsuarios);
                 recyclerView.setAdapter(adapterContact);
                 return true;
         }

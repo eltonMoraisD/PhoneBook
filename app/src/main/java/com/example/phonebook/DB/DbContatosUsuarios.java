@@ -26,6 +26,7 @@ public class DbContatosUsuarios extends SQLiteOpenHelper {
                 " telefone TEXT NOT NULL, " +
                 " email TEXT NOT NULL," +
                 " dataNasc TEXT NOT NULL, " +
+                " isFav BOOLEAN, " +
                 " foto BLOB NOT NULL, " +
                 " lat DOUBLE, " +
                 " lon DOUBLE);";

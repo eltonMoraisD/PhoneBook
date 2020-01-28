@@ -51,19 +51,13 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
     private Double lat;
     private Double lon;
 
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_adicionar_contatos);
         nomeUsuario = findViewById(R.id.addNomeUsuario);
-        if (savedInstanceState != null) {
-            nome = savedInstanceState.getString(KEY_NOME);
-            Log.i("T", "Entrou");
-            nomeUsuario.setText(nome);
-        } else {
-            nomeUsuario.setText(nome);
-        }
 
         fotoUsuario = findViewById(R.id.uploadFotoUsuario);
         localizacaoContato = findViewById(R.id.localizacaoContato);
@@ -133,7 +127,6 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
                 lat = Double.valueOf(latitude.getText().toString());
                 lon = Double.valueOf(longitude.getText().toString());
 
-
                 if (nome.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Informa um nome", Toast.LENGTH_SHORT).show();
 
@@ -154,7 +147,7 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
                     contatosUsuarios.setImagemUsuario(bitmap);
                     contatosUsuarios.setLatitude(lat);
                     contatosUsuarios.setLongitude(lon);
-
+                    contatosUsuarios.setFavorite(0);
                     ContatoDAO contatoDAO = new ContatoDAO(getApplicationContext());
 
                     contatoDAO.salvar(contatosUsuarios);
@@ -233,5 +226,6 @@ public class AdicionarContatosActivity extends AppCompatActivity implements Date
         String data = dayOfMonth + "/" + month + "/" + year;
         dataNascimento.setText(data);
     }
+
 
 }

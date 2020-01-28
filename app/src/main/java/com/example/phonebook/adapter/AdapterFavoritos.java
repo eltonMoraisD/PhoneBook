@@ -1,6 +1,9 @@
 package com.example.phonebook.adapter;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +22,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.phonebook.R;
@@ -71,6 +76,12 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
                     public void onClick(DialogInterface dialog, int which) {
 
                         //lista.get(contatosUsuarios).setFavorite(false);
+                        contatosUsuarios = Comon.listaContatosUsuarios.get(position);
+                        contatosUsuarios.setFavorite(0);
+                        contatoDAO.favorito(contatosUsuarios);
+
+
+
                         notifyDataSetChanged();
 
                     }
@@ -88,10 +99,9 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
     public int getItemCount() {
         int cont = 0;
         contatoDAO = new ContatoDAO(context);
-        for (int i = 0; i < lista.size(); i++) {
+        for (int i = 0; i < Comon.listaContatosUsuarios.size(); i++) {
 
-            Log.i("cont", "Entrou no for");
-            if (lista.get(i).getFavorite()) {
+            if (Comon.listaContatosUsuarios.get(i).getFavorite() == 1) {
                 Log.i("cont", "Entrou no if");
                 cont++;
 
@@ -158,4 +168,6 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
             return true;
         }
     }
+
+
 }

@@ -8,6 +8,7 @@ public interface IContatoDAO {
     boolean salvar(ContatosUsuarios contatosUsuarios);
     boolean atualizar(ContatosUsuarios contatosUsuarios);
     boolean deletar(ContatosUsuarios contatosUsuarios);
+    boolean favorito(ContatosUsuarios contatosUsuarios);
     List<ContatosUsuarios> listar();
 
 }

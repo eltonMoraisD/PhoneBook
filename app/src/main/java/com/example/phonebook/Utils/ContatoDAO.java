@@ -31,8 +31,6 @@ public class ContatoDAO implements IContatoDAO {
         DbContatosUsuarios dbContatosUsuarios = new DbContatosUsuarios(context);
         escreve = dbContatosUsuarios.getWritableDatabase();
         ler = dbContatosUsuarios.getReadableDatabase();
-
-
     }
 
     @Override
@@ -41,14 +39,13 @@ public class ContatoDAO implements IContatoDAO {
         Bitmap bitmap = contatosUsuarios.getImagemUsuario();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] imagem = stream.toByteArray();
-
         ContentValues contentValues = new ContentValues();
         contentValues.put("nome", contatosUsuarios.getNomeUsuario());
         contentValues.put("telefone", contatosUsuarios.getTelefoneUsuario());
         contentValues.put("email", contatosUsuarios.getEmailUsuario());
         contentValues.put("dataNasc", contatosUsuarios.getDatanascimento());
         contentValues.put("foto", imagem);
-        contentValues.put("lat", contatosUsuarios.getLatitude());
+        contentValues.put("isFav",contatosUsuarios.getFavorite());
         contentValues.put("lon", contatosUsuarios.getLongitude());
 
         try {
@@ -98,6 +95,7 @@ public class ContatoDAO implements IContatoDAO {
 
     @Override
     public boolean deletar(ContatosUsuarios contatosUsuarios) {
+/*
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         Bitmap bitmap = contatosUsuarios.getImagemUsuario();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -110,8 +108,9 @@ public class ContatoDAO implements IContatoDAO {
         contentValues.put("email", contatosUsuarios.getEmailUsuario());
         contentValues.put("dataNasc", contatosUsuarios.getDatanascimento());
         contentValues.put("foto", imagem);
+        contentValues.put("isFav",contatosUsuarios.getFavorite());
         contentValues.put("lat", contatosUsuarios.getLatitude());
-        contentValues.put("lon", contatosUsuarios.getLongitude());
+        contentValues.put("lon", contatosUsuarios.getLongitude());*/
         try {
 
             String[] ids = {contatosUsuarios.getID().toString()};
@@ -123,6 +122,26 @@ public class ContatoDAO implements IContatoDAO {
             Log.e("INFO", "Erro ao Deletar contato" + e.getMessage());
             return false;
         }
+        return true;
+    }
+
+    @Override
+    public boolean favorito(ContatosUsuarios contatosUsuarios) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("isFav",contatosUsuarios.getFavorite());
+
+        try {
+
+            String[] ids = {contatosUsuarios.getID().toString()};
+            escreve.update(DbContatosUsuarios.TABELA_CONTATOS, contentValues, "id=?", ids);
+            Log.i("INFO", "Contato Atualizado com sucesso");
+
+
+        } catch (Exception e) {
+            Log.e("INFO", "Erro ao Atualizar contato" + e.getMessage());
+            return false;
+        }
+
         return true;
     }
 
@@ -145,6 +164,7 @@ public class ContatoDAO implements IContatoDAO {
             String dataNasc = cursor.getString(cursor.getColumnIndex("dataNasc"));
             Double latitude = cursor.getDouble(cursor.getColumnIndex("lat"));
             Double longitude = cursor.getDouble(cursor.getColumnIndex("lon"));
+            int isfav = cursor.getInt(cursor.getColumnIndex("isFav"));
 
             Log.i("ID", id.toString());
             byte[] foto = cursor.getBlob(cursor.getColumnIndex("foto"));
@@ -159,7 +179,7 @@ public class ContatoDAO implements IContatoDAO {
             contatos.setDatanascimento(dataNasc);
             contatos.setLatitude(latitude);
             contatos.setLongitude(longitude);
-
+            contatos.setFavorite(isfav);
             contatosUsuarios.add(contatos);
         }
         cursor.close();

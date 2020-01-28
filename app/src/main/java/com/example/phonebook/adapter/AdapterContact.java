@@ -30,6 +30,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.phonebook.R;
+import com.example.phonebook.Utils.Comon;
 import com.example.phonebook.Utils.ContatoDAO;
 import com.example.phonebook.activity.AtualizarContatosActivity;
 import com.example.phonebook.model.ContatosUsuarios;
@@ -188,13 +189,13 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
                     contatosUsuarios.setFavorite(true);
 */
                     //con.setFavorite(true);
-                    //Comon.listaContatosUsuarios.get(posicao).setFavorite(true);
+                    //Comon.listaContatosUsuarios.get(posicao).setFavorite(1);
                     //contatosUsuarios.setFavorite(true);
+                    ContatosUsuarios con =  Comon.listaContatosUsuarios.get(posicao);
+                    con.setFavorite(1);
                     ContatoDAO contatoDAO = new ContatoDAO(itemView.getContext());
-                    contatoDAO.listar().get(posicao).setFavorite(true);
-                    lista.get(posicao).setFavorite(true);
-                    Toast.makeText(itemView.getContext(), "Contato " + lista.get(posicao).getFavorite() + " adicionado nos favoritos", Toast.LENGTH_LONG).show();
-                    notifyDataSetChanged();
+                    contatoDAO.favorito(con);
+
                     return true;
 
                 case 4:
@@ -207,18 +208,17 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
 
                         @RequiresApi(api = Build.VERSION_CODES.N)
                         public void onClick(DialogInterface dialog, int which) {
+                            ContatosUsuarios contatosUsuarios = Comon.listaContatosUsuarios.get(getAdapterPosition());
                             ContatoDAO contatoDAO = new ContatoDAO(itemView.getContext());
-
-
+/*
                             Bitmap bitmap = ((BitmapDrawable) fotoUsuario.getDrawable()).getBitmap();
-
                             contatosUsuarios.setNomeUsuario(nomeUsuario.getText().toString());
                             contatosUsuarios.setTelefoneUsuario(telefoneUsuario.getText().toString());
                             contatosUsuarios.setImagemUsuario(bitmap);
-                            contatosUsuarios.setID(contatoDAO.listar().get(posicao).getID());
+                            contatosUsuarios.setID(contatoDAO.listar().get(posicao).getID());*/
 
                             contatoDAO.deletar(contatosUsuarios);
-
+                            Log.i("D","delete");
 
                         }
                     });
