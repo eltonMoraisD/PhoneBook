@@ -1,9 +1,11 @@
 package com.example.phonebook.adapter;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,20 +20,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.phonebook.R;
 import com.example.phonebook.Utils.Comon;
 import com.example.phonebook.Utils.ContatoDAO;
 import com.example.phonebook.model.ContatosUsuarios;
 
 import java.util.List;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.FavoriteViewHolder> {
 
@@ -48,7 +49,6 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
     @NonNull
     @Override
     public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.adapter_favoritos, parent, false);
         return new FavoriteViewHolder(view);
@@ -75,21 +75,18 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     public void onClick(DialogInterface dialog, int which) {
 
-                        //lista.get(contatosUsuarios).setFavorite(false);
                         contatosUsuarios = Comon.listaContatosUsuarios.get(position);
                         contatosUsuarios.setFavorite(0);
                         contatoDAO.favorito(contatosUsuarios);
 
+                        createNotificationChannel();
 
 
                         notifyDataSetChanged();
-
                     }
                 });
-
                 alertDialog.setNegativeButton("Não", null);
                 alertDialog.show();
-
             }
         });
     }
@@ -100,23 +97,21 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
         int cont = 0;
         contatoDAO = new ContatoDAO(context);
         for (int i = 0; i < Comon.listaContatosUsuarios.size(); i++) {
-
             if (Comon.listaContatosUsuarios.get(i).getFavorite() == 1) {
                 Log.i("cont", "Entrou no if");
                 cont++;
-
 
             } else {
                 Log.i("cont", "Entrou no else");
 
             }
         }
-
         return cont;
     }
 
 
-    public class FavoriteViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
+    public class FavoriteViewHolder extends RecyclerView.ViewHolder
+            implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
 
         ImageView fotoUsuarioFav;
         ImageView deleteContato;
@@ -132,16 +127,13 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
             deleteContato = itemView.findViewById(R.id.deleteContatoFavorito);
 
             itemView.setOnCreateContextMenuListener(this);
-
         }
-
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.setHeaderTitle("Opções");
             MenuItem call = menu.add(Menu.NONE, 1, 1, "Call");
             MenuItem sms = menu.add(Menu.NONE, 2, 2, "SMS");
-
             call.setOnMenuItemClickListener(this);
             sms.setOnMenuItemClickListener(this);
         }
@@ -163,11 +155,32 @@ public class AdapterFavoritos extends RecyclerView.Adapter<AdapterFavoritos.Favo
                     intent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", uri, null));
                     itemView.getContext().startActivity(intent);
                     return true;
-
             }
             return true;
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void createNotificationChannel() {
+
+        Intent intent=new Intent(this.context,AdapterFavoritos.class);
+        String CHANNEL_ID="MYCHANNEL";
+        NotificationChannel notificationChannel=new NotificationChannel(CHANNEL_ID,"name",NotificationManager.IMPORTANCE_LOW);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this.context,1,intent,0);
+        Notification notification=new Notification.Builder(this.context,CHANNEL_ID)
+                .setContentText("PhoneBook")
+                .setContentTitle("Contato "+contatosUsuarios.getNomeUsuario()+" deletado dos favoritos")
+                .setContentIntent(pendingIntent)
+                .addAction(R.drawable.ic_add_foto_azul_24dp,"Title",pendingIntent)
+                .setChannelId(CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_contact_default_24dp)
+                .build();
+
+        NotificationManager notificationManager=(NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.createNotificationChannel(notificationChannel);
+        notificationManager.notify(1,notification);
+        Log.i("NO","notificacao");
+    }
 
 }

@@ -4,6 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.phonebook.R;
@@ -47,6 +50,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
     private int posicaoAdapter;
     private Long id;
     private ContatosUsuarios contatosUsuarios;
+    private Context context;
 
     public AdapterContact(List<ContatosUsuarios> lista) {
         this.lista = lista;
@@ -163,7 +167,6 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
             switch (item.getItemId()) {
                 case 1:
                     // efetuar a ligaçao
-
                     intent = new Intent(Intent.ACTION_CALL, chamada);
 
                     if (ActivityCompat.checkSelfPermission(itemView.getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -181,20 +184,12 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
 
                 case 3:
                     //adicionar aos favoritos
-                    /*Bitmap bitmap = ((BitmapDrawable) fotoUsuario.getDrawable()).getBitmap();
-
-                    contatosUsuarios.setNomeUsuario(nomeUsuario.getText().toString());
-                    contatosUsuarios.setTelefoneUsuario(telefoneUsuario.getText().toString());
-                    contatosUsuarios.setImagemUsuario(bitmap);
-                    contatosUsuarios.setFavorite(true);
-*/
-                    //con.setFavorite(true);
-                    //Comon.listaContatosUsuarios.get(posicao).setFavorite(1);
-                    //contatosUsuarios.setFavorite(true);
-                    ContatosUsuarios con =  Comon.listaContatosUsuarios.get(posicao);
+                    ContatosUsuarios con = Comon.listaContatosUsuarios.get(getAdapterPosition());
                     con.setFavorite(1);
                     ContatoDAO contatoDAO = new ContatoDAO(itemView.getContext());
                     contatoDAO.favorito(con);
+
+                    Toast.makeText(itemView.getContext(),"contato salvo nos favoritos", Toast.LENGTH_SHORT).show();
 
                     return true;
 
@@ -210,15 +205,8 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
                         public void onClick(DialogInterface dialog, int which) {
                             ContatosUsuarios contatosUsuarios = Comon.listaContatosUsuarios.get(getAdapterPosition());
                             ContatoDAO contatoDAO = new ContatoDAO(itemView.getContext());
-/*
-                            Bitmap bitmap = ((BitmapDrawable) fotoUsuario.getDrawable()).getBitmap();
-                            contatosUsuarios.setNomeUsuario(nomeUsuario.getText().toString());
-                            contatosUsuarios.setTelefoneUsuario(telefoneUsuario.getText().toString());
-                            contatosUsuarios.setImagemUsuario(bitmap);
-                            contatosUsuarios.setID(contatoDAO.listar().get(posicao).getID());*/
 
                             contatoDAO.deletar(contatosUsuarios);
-                            Log.i("D","delete");
 
                         }
                     });
@@ -228,6 +216,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ContactV
             return true;
         }
     }
+
 
 
 }
